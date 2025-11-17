@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, AlertCircle, Sparkles } from 'lucide-react';
+import { Send, AlertCircle, Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 interface Message {
@@ -98,17 +98,17 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-end p-6 pointer-events-none"
+      className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-6 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col pointer-events-auto"
+        className="w-full max-w-md h-[90vh] sm:h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-t-2xl">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 sm:p-6 rounded-t-2xl relative">
+          <div className="flex items-center gap-3 pr-12">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -120,6 +120,15 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
               </p>
             </div>
           </div>
+          
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full transition-colors focus:outline-none focus:ring-4 focus:ring-white/50"
+            aria-label="Kapat"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
         </div>
 
         {/* Disclaimer */}
