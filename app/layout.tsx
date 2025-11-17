@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
-import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import Chatbot from "@/components/ai/Chatbot";
 
@@ -19,7 +18,6 @@ export default function RootLayout({
     <html lang="tr">
       <body className="antialiased flex flex-col min-h-screen">
         <Header />
-        <Navigation />
         <main className="flex-1">
           {children}
         </main>
