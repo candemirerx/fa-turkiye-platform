@@ -11,14 +11,14 @@ export default async function BilgiBankasiPage() {
     .order('created_at', { ascending: false });
 
   // Kategorilere göre grupla
-  const articlesByCategory: Record<string, typeof articles> = {};
+  const articlesByCategory: Record<string, NonNullable<typeof articles>> = {};
   
   if (articles) {
     articles.forEach((article) => {
       if (!articlesByCategory[article.kategori]) {
         articlesByCategory[article.kategori] = [];
       }
-      articlesByCategory[article.kategori].push(article);
+      articlesByCategory[article.kategori]?.push(article);
     });
   }
 
@@ -63,7 +63,7 @@ export default async function BilgiBankasiPage() {
                   {category}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {articlesByCategory[category].map((article) => (
+                  {articlesByCategory[category]?.map((article) => (
                     <ArticleCard key={article.id} article={article} />
                   ))}
                 </div>
