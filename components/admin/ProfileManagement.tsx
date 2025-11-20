@@ -24,14 +24,22 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
     const [loading, setLoading] = useState<string | null>(null);
     const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        ad_soyad: string;
+        yas: string;
+        yakinlik_derecesi: string;
+        sehir: string;
+        hikayem_text: string;
+        yetkinlikler_cv: string;
+        onay_durumu: 'beklemede' | 'onaylandı' | 'reddedildi';
+    }>({
         ad_soyad: '',
         yas: '',
         yakinlik_derecesi: '',
         sehir: '',
         hikayem_text: '',
         yetkinlikler_cv: '',
-        onay_durumu: 'beklemede' as const,
+        onay_durumu: 'beklemede',
     });
 
     // Filtreleme
@@ -200,8 +208,8 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === tab.id
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             {tab.label} ({tab.count})
@@ -276,10 +284,10 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
                                         </div>
                                         <div className="flex items-center gap-2 mt-2">
                                             <span className={`px-2 py-1 rounded text-xs font-medium ${profile.onay_durumu === 'onaylandı'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : profile.onay_durumu === 'beklemede'
-                                                        ? 'bg-yellow-100 text-yellow-700'
-                                                        : 'bg-red-100 text-red-700'
+                                                ? 'bg-green-100 text-green-700'
+                                                : profile.onay_durumu === 'beklemede'
+                                                    ? 'bg-yellow-100 text-yellow-700'
+                                                    : 'bg-red-100 text-red-700'
                                                 }`}>
                                                 {profile.onay_durumu === 'onaylandı' ? 'Onaylandı' :
                                                     profile.onay_durumu === 'beklemede' ? 'Beklemede' : 'Reddedildi'}
