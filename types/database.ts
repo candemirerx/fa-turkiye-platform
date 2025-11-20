@@ -14,6 +14,8 @@ export interface Database {
           id: string;
           user_id: string;
           ad_soyad: string;
+          yas: number | null;
+          yakinlik_derecesi: string | null;
           sehir: string;
           hikayem_text: string | null;
           yetkinlikler_cv: string | null;
@@ -26,6 +28,8 @@ export interface Database {
           id?: string;
           user_id: string;
           ad_soyad: string;
+          yas?: number | null;
+          yakinlik_derecesi?: string | null;
           sehir: string;
           hikayem_text?: string | null;
           yetkinlikler_cv?: string | null;
@@ -38,6 +42,8 @@ export interface Database {
           id?: string;
           user_id?: string;
           ad_soyad?: string;
+          yas?: number | null;
+          yakinlik_derecesi?: string | null;
           sehir?: string;
           hikayem_text?: string | null;
           yetkinlikler_cv?: string | null;

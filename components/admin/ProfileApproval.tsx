@@ -101,11 +101,26 @@ export default function ProfileApproval({ profiles }: ProfileApprovalProps) {
               {/* Info */}
               <div className="flex-1">
                 <CardTitle className="mb-2">{profile.ad_soyad}</CardTitle>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{profile.sehir}</span>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin className="w-4 h-4" />
+                    <span>{profile.sehir}</span>
+                  </div>
+                  {profile.yas && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <User className="w-4 h-4" />
+                      <span>Yaş: {profile.yas}</span>
+                    </div>
+                  )}
+                  {profile.yakinlik_derecesi && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <span className="text-sm">
+                        <strong>Yakınlık:</strong> {profile.yakinlik_derecesi}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 mt-2">
                   Oluşturulma: {new Date(profile.created_at).toLocaleDateString('tr-TR')}
                 </p>
               </div>

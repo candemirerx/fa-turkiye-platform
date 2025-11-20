@@ -19,8 +19,11 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     ad_soyad: initialData?.ad_soyad || '',
+    yas: initialData?.yas || '',
+    yakinlik_derecesi: initialData?.yakinlik_derecesi || '',
     sehir: initialData?.sehir || '',
     hikayem_text: initialData?.hikayem_text || '',
     yetkinlikler_cv: initialData?.yetkinlikler_cv || '',
@@ -91,11 +94,14 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     if (!validate()) return;
 
     setLoading(true);
+    setSuccess(false);
 
     try {
       const profileData = {
         user_id: userId,
         ad_soyad: formData.ad_soyad.trim(),
+        yas: formData.yas ? parseInt(formData.yas.toString()) : null,
+        yakinlik_derecesi: formData.yakinlik_derecesi.trim() || null,
         sehir: formData.sehir.trim(),
         hikayem_text: formData.hikayem_text.trim() || null,
         yetkinlikler_cv: formData.yetkinlikler_cv.trim() || null,
@@ -120,7 +126,13 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         if (error) throw error;
       }
 
-      router.push('/network?success=true');
+      // Başarı mesajını göster
+      setSuccess(true);
+
+      // 5 saniye sonra mesajı gizle
+      setTimeout(() => {
+        setSuccess(false);
+      }, 5000);
     } catch (error) {
       console.error('Submit error:', error);
       setErrors({ submit: 'Profil kaydedilirken hata oluştu' });
@@ -176,6 +188,59 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         required
       />
 
+      {/* Yaş */}
+      <Input
+        label="Yaş"
+        type="number"
+        value={formData.yas}
+        onChange={(e) => setFormData({ ...formData, yas: e.target.value })}
+        placeholder="Örn: 35"
+        min="0"
+        max="120"
+      />
+
+      {/* Yakınlık Derecesi */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Yakınlık Derecesi
+        </label>
+        <Input
+          value={formData.yakinlik_derecesi}
+          onChange={(e) => setFormData({ ...formData, yakinlik_derecesi: e.target.value })}
+          placeholder="Örn: Friedrich Ataksi, Ebeveyn, Eşi..."
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, yakinlik_derecesi: 'Friedrich Ataksi' })}
+            className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          >
+            Friedrich Ataksi
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, yakinlik_derecesi: 'Ebeveyn' })}
+            className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          >
+            Ebeveyn
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, yakinlik_derecesi: 'Eşi' })}
+            className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          >
+            Eşi
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, yakinlik_derecesi: 'Sağlık danışmanı' })}
+            className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          >
+            Sağlık danışmanı
+          </button>
+        </div>
+      </div>
+
       {/* Şehir */}
       <Input
         label="Şehir"
@@ -187,13 +252,13 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
 
       {/* Hikayem */}
       <Textarea
-        label="Hikayem"
+        label="FA Hikayem"
         value={formData.hikayem_text}
         onChange={(e) =>
           setFormData({ ...formData, hikayem_text: e.target.value })
         }
         placeholder="FA ile ilgili hikayenizi paylaşın..."
-        rows={6}
+        rows={8}
       />
 
       {/* Yetkinlikler */}
@@ -204,7 +269,7 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
           setFormData({ ...formData, yetkinlikler_cv: e.target.value })
         }
         placeholder="Mesleki deneyimleriniz, yetkinlikleriniz..."
-        rows={6}
+        rows={4}
       />
 
       {/* Submit Error */}
@@ -214,14 +279,14 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         </div>
       )}
 
-      {/* Info */}
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Bilgi:</strong> Profiliniz yöneticiler tarafından
-          incelendikten sonra yayınlanacaktır. Bu işlem genellikle 24 saat
-          içinde tamamlanır.
-        </p>
-      </div>
+      {/* Success Message */}
+      {success && (
+        <div className="bg-green-50 border-l-4 border-green-400 p-4">
+          <p className="text-sm text-green-800 font-medium">
+            ✓ Profil durumu gönderildi
+          </p>
+        </div>
+      )}
 
       {/* Buttons */}
       <div className="flex gap-4">

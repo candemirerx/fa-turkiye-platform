@@ -98,16 +98,17 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-6 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end p-0 sm:p-6 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end p-0 sm:p-6 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md h-[90vh] sm:h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col"
+        className="w-full sm:max-w-md h-[100vh] sm:h-[600px] sm:rounded-2xl bg-white shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 sm:p-6 rounded-t-2xl relative">
-          <div className="flex items-center gap-3 pr-12">
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 sm:p-6 sm:rounded-t-2xl relative flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1">
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
@@ -120,14 +121,14 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
               </p>
             </div>
           </div>
-          
-          {/* Close Button */}
+
+          {/* Close Button - Daha Belirgin */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full transition-colors focus:outline-none focus:ring-4 focus:ring-white/50"
+            className="w-14 h-14 flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-white flex-shrink-0 ml-2"
             aria-label="Kapat"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="w-7 h-7 text-purple-600" />
           </button>
         </div>
 

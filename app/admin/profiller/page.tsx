@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
-import ProfileApproval from '@/components/admin/ProfileApproval';
+import ProfileManagement from '@/components/admin/ProfileManagement';
 
 export default async function AdminProfillerPage() {
   const supabase = await createClient();
 
-  const { data: pendingProfiles } = await supabase
+  // Tüm profilleri çek
+  const { data: allProfiles } = await supabase
     .from('profiles')
     .select('*')
-    .eq('onay_durumu', 'beklemede')
     .order('created_at', { ascending: false });
 
   return (
@@ -17,11 +17,11 @@ export default async function AdminProfillerPage() {
           Profil Yönetimi
         </h1>
         <p className="text-gray-600">
-          Bekleyen profilleri inceleyin ve onaylayın
+          Profilleri inceleyin, düzenleyin ve yönetin
         </p>
       </div>
 
-      <ProfileApproval profiles={pendingProfiles || []} />
+      <ProfileManagement profiles={allProfiles || []} />
     </div>
   );
 }
