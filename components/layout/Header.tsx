@@ -33,9 +33,6 @@ export default function Header() {
               <h1 className="text-xl font-bold text-gray-900">
                 FA Türkiye
               </h1>
-              <p className="text-xs text-gray-600">
-                Yalnız Değilsiniz
-              </p>
             </div>
           </Link>
 
