@@ -33,7 +33,7 @@ export default async function ProfileDetailPage({
           className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-8 font-medium focus:outline-none focus:ring-4 focus:ring-blue-500 rounded-lg px-4 py-2"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>FA Network'e Dön</span>
+          <span>FA Network&apos;e Dön</span>
         </Link>
 
         {/* Profile Card */}

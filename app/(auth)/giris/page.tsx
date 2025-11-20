@@ -190,7 +190,7 @@ export default function GirisPage() {
           <a href="#" className="text-blue-600 hover:underline">
             Kullanım Koşulları
           </a>
-          'nı kabul etmiş olursunuz.
+          &apos;nı kabul etmiş olursunuz.
         </p>
       </div>
     </main>
