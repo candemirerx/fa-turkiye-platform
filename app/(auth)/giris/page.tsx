@@ -151,7 +151,7 @@ export default function GirisPage() {
               label="Şifre"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={isSignUp ? "Admin olmak için: 220309" : "Şifrenizi girin"}
+              placeholder={isSignUp ? "Şifrenizi belirleyin" : "Şifrenizi girin"}
               required
             />
 
