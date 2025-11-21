@@ -102,40 +102,40 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-md h-[100vh] sm:h-[600px] sm:rounded-2xl bg-white shadow-2xl flex flex-col"
+        className="w-full sm:max-w-md h-[100dvh] sm:h-[600px] sm:rounded-2xl bg-white shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 sm:p-6 sm:rounded-t-2xl relative flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-6 h-6 text-white" />
+        {/* Header - Mobilde Kompakt */}
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 sm:p-6 sm:rounded-t-2xl relative flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div>
-              <h3 className="text-white font-semibold text-lg">
+            <div className="min-w-0">
+              <h3 className="text-white font-semibold text-base sm:text-lg truncate">
                 AI Asistan
               </h3>
-              <p className="text-white/80 text-sm">
+              <p className="text-white/80 text-xs sm:text-sm truncate">
                 FA hakkında sorularınızı yanıtlıyorum
               </p>
             </div>
           </div>
 
-          {/* Close Button - Daha Belirgin */}
+          {/* Close Button - Mobilde Daha Küçük */}
           <button
             onClick={onClose}
-            className="w-14 h-14 flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-white flex-shrink-0 ml-2"
+            className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-white flex-shrink-0 ml-2"
             aria-label="Kapat"
           >
-            <X className="w-7 h-7 text-purple-600" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
           </button>
         </div>
 
-        {/* Disclaimer */}
-        <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
-          <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-amber-800">
+        {/* Disclaimer - Mobilde Kompakt */}
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-3 sm:p-4 flex-shrink-0">
+          <div className="flex gap-2 sm:gap-3">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
               <strong>Önemli:</strong> Ben bir doktor değilim ve tıbbi tavsiye
               veremem. Lütfen sağlık sorunlarınız için bir sağlık
               profesyoneline danışın.
@@ -143,8 +143,8 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {/* Messages - Mobilde Daha Fazla Alan */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 overscroll-contain">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -155,18 +155,18 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
             >
               <div
                 className={cn(
-                  'max-w-[80%] rounded-2xl px-4 py-3',
+                  'max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2 sm:px-4 sm:py-3',
                   message.role === 'user'
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-900'
                 )}
               >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words">
                   {message.content}
                 </p>
                 <p
                   className={cn(
-                    'text-xs mt-2',
+                    'text-xs mt-1.5 sm:mt-2',
                     message.role === 'user'
                       ? 'text-blue-100'
                       : 'text-gray-500'
@@ -183,7 +183,7 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
 
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-2xl px-4 py-3">
+              <div className="bg-gray-100 rounded-2xl px-3 py-2 sm:px-4 sm:py-3">
                 <div className="flex gap-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
                   <div
@@ -202,21 +202,21 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+        {/* Input - Mobilde Daha Kullanışlı */}
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-gray-200 flex-shrink-0 bg-white">
           <div className="flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Sorunuzu yazın..."
-              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-purple-500 focus:border-purple-500 min-h-[44px]"
+              className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base text-gray-900 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-purple-500 focus:border-purple-500 min-h-[44px] disabled:text-gray-500"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-4 focus:ring-purple-500 min-h-[44px] min-w-[44px]"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 active:bg-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-4 focus:ring-purple-500 min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               <Send className="w-5 h-5" />
             </button>

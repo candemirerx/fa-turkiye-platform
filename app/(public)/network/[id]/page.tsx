@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, MapPin, User, Briefcase, Heart } from 'lucide-react';
+import { ArrowLeft, MapPin, User, Briefcase, Heart, Plus } from 'lucide-react';
 
 export default async function ProfileDetailPage({
   params,
@@ -65,10 +65,16 @@ export default async function ProfileDetailPage({
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-3">
                 {profile.ad_soyad}
+                {profile.yakinlik_derecesi && (
+                  <span className="text-gray-600 font-normal"> ({profile.yakinlik_derecesi})</span>
+                )}
               </h1>
               <div className="flex items-center gap-2 text-gray-600">
                 <MapPin className="w-5 h-5" />
-                <span className="text-lg">{profile.sehir}</span>
+                <span className="text-lg">
+                  {profile.sehir}
+                  {profile.yas && ` • ${profile.yas} Yaşında`}
+                </span>
               </div>
             </div>
 
@@ -119,11 +125,20 @@ export default async function ProfileDetailPage({
 
         {/* Support Message */}
         <div className="mt-8 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg p-6">
-          <p className="text-blue-800">
-            <strong>Topluluk Desteği:</strong> Her hikaye değerlidir ve
-            birbirimizden öğrenerek güçleniriz. Kendi hikayenizi paylaşmak
-            isterseniz, profil oluşturabilirsiniz.
-          </p>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-blue-800 flex-1">
+              <strong>Topluluk Desteği:</strong> Her hikaye değerlidir ve
+              birbirimizden öğrenerek güçleniriz. Kendi hikayenizi paylaşmak
+              isterseniz, profil oluşturabilirsiniz.
+            </p>
+            <Link
+              href="/network/profil-olustur"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Profil Oluştur</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

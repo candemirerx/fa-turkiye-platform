@@ -29,15 +29,21 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
             )}
           </div>
 
-          {/* Name */}
+          {/* Name and Relationship */}
           <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
             {profile.ad_soyad}
+            {profile.yakinlik_derecesi && (
+              <span className="text-gray-600 font-normal"> ({profile.yakinlik_derecesi})</span>
+            )}
           </h3>
 
-          {/* Location */}
+          {/* Location and Age */}
           <div className="flex items-center justify-center gap-2 text-gray-600">
             <MapPin className="w-4 h-4" />
-            <span>{profile.sehir}</span>
+            <span>
+              {profile.sehir}
+              {profile.yas && ` • ${profile.yas} Yaşında`}
+            </span>
           </div>
 
           {/* View Profile Button */}
