@@ -8,8 +8,25 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+
+    // Exchange code for session
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      console.error('Auth callback error:', error);
+      // Hata durumunda giriş sayfasına yönlendir
+      return NextResponse.redirect(`${origin}/giris?error=${encodeURIComponent(error.message)}`);
+    }
+
+    // Kullanıcı bilgilerini al
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Admin kontrolü - admin@fa-platform.com ise /admin'e yönlendir
+    if (user?.email === 'admin@fa-platform.com') {
+      return NextResponse.redirect(`${origin}/admin`);
+    }
   }
 
+  // Normal kullanıcılar veya code yoksa ana sayfaya yönlendir
   return NextResponse.redirect(`${origin}/`);
 }
