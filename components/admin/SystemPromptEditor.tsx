@@ -100,7 +100,7 @@ export default function SystemInstructionEditor() {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-blue-700">
-                                <strong>Önemli:</strong> Sistem talimatı, AI'nın kişiliğini, ton ve üslubunu,
+                                <strong>Önemli:</strong> Sistem talimatı, AI&apos;nın kişiliğini, ton ve üslubunu,
                                 yanıt formatını ve güvenlik kurallarını tanımlar. Dikkatli düzenleyin.
                             </p>
                         </div>
@@ -111,8 +111,8 @@ export default function SystemInstructionEditor() {
                 {message && (
                     <div
                         className={`border-l-4 p-4 rounded-r-lg ${message.type === 'success'
-                                ? 'bg-green-50 border-green-400'
-                                : 'bg-red-50 border-red-400'
+                            ? 'bg-green-50 border-green-400'
+                            : 'bg-red-50 border-red-400'
                             }`}
                     >
                         <div className="flex items-center gap-3">
@@ -180,7 +180,7 @@ export default function SystemInstructionEditor() {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                     <h4 className="font-semibold text-gray-900 text-sm">💡 İpuçları:</h4>
                     <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
-                        <li>AI'nın rolünü ve uzmanlık alanını net bir şekilde tanımlayın</li>
+                        <li>AI&apos;nın rolünü ve uzmanlık alanını net bir şekilde tanımlayın</li>
                         <li>Güvenlik kurallarını ve sınırlamaları belirtin</li>
                         <li>Yanıt formatını ve ton/üslubu açıklayın</li>
                         <li>Kullanıcılarla nasıl etkileşime geçeceğini belirtin</li>

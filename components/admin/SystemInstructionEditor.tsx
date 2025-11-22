@@ -101,8 +101,8 @@ export default function SystemInstructionEditor({
                         <Card
                             key={instruction.id}
                             className={`transition-all ${instruction.is_active
-                                    ? 'border-l-4 border-green-500'
-                                    : 'border-l-4 border-gray-300 opacity-60'
+                                ? 'border-l-4 border-green-500'
+                                : 'border-l-4 border-gray-300 opacity-60'
                                 }`}
                         >
                             <CardHeader>
@@ -124,8 +124,8 @@ export default function SystemInstructionEditor({
                                         <button
                                             onClick={() => handleToggleActive(instruction)}
                                             className={`p-2 rounded-lg transition-colors ${instruction.is_active
-                                                    ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
                                             title={instruction.is_active ? 'Devre Dışı Bırak' : 'Aktif Et'}
                                         >
@@ -225,7 +225,7 @@ export default function SystemInstructionEditor({
                             Henüz sistem talimatı bulunmuyor
                         </p>
                         <p className="text-gray-500 text-sm mt-2">
-                            Veritabanı migration'ını çalıştırarak varsayılan talimatları ekleyin
+                            Veritabanı migration&apos;ını çalıştırarak varsayılan talimatları ekleyin
                         </p>
                     </CardContent>
                 </Card>
