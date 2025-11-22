@@ -192,6 +192,29 @@ export interface Database {
           updated_at?: string;
         };
       };
+      knowledge_suggestions: {
+        Row: {
+          id: string;
+          oneri: string;
+          durum: 'beklemede' | 'onaylandi' | 'reddedildi';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          oneri: string;
+          durum?: 'beklemede' | 'onaylandi' | 'reddedildi';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          oneri?: string;
+          durum?: 'beklemede' | 'onaylandi' | 'reddedildi';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -215,3 +238,4 @@ export type Event = Database['public']['Tables']['events']['Row'];
 export type AITrainingData = Database['public']['Tables']['ai_training_data']['Row'];
 export type AISystemInstruction = Database['public']['Tables']['ai_system_instructions']['Row'];
 export type AISetting = Database['public']['Tables']['ai_settings']['Row'];
+export type KnowledgeSuggestion = Database['public']['Tables']['knowledge_suggestions']['Row'];
