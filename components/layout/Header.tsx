@@ -12,7 +12,7 @@ const navItems = [
   { label: 'Bilgi Bankası', href: '/bilgi-bankasi', icon: BookOpen },
   { label: 'FA Network', href: '/network', icon: Users },
   { label: 'Etkinlikler', href: '/etkinlikler', icon: Calendar },
-  { label: 'İletişim', href: '/iletisim', icon: MessageCircle },
+  { label: 'Gruplar (İletişim)', href: '/iletisim', icon: MessageCircle },
 ];
 
 export default function Header() {

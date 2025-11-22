@@ -60,6 +60,10 @@ export interface Database {
           icerik: string;
           kategori: string;
           goruntulenme_sayisi: number;
+          icerik_tipi: 'manuel' | 'link' | 'dosya';
+          kaynak_url: string | null;
+          dosya_adi: string | null;
+          ozet: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -69,6 +73,10 @@ export interface Database {
           icerik: string;
           kategori: string;
           goruntulenme_sayisi?: number;
+          icerik_tipi?: 'manuel' | 'link' | 'dosya';
+          kaynak_url?: string | null;
+          dosya_adi?: string | null;
+          ozet?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -78,6 +86,10 @@ export interface Database {
           icerik?: string;
           kategori?: string;
           goruntulenme_sayisi?: number;
+          icerik_tipi?: 'manuel' | 'link' | 'dosya';
+          kaynak_url?: string | null;
+          dosya_adi?: string | null;
+          ozet?: string | null;
           created_at?: string;
           updated_at?: string;
         };
