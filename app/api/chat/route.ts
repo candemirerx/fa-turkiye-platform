@@ -53,6 +53,32 @@ export async function POST(request: NextRequest) {
       console.error('Training data error:', trainingError);
     }
 
+    // Sistem talimatını veritabanından çek
+    const { data: systemInstructionData, error: instructionError } = await supabase
+      .from('ai_settings')
+      .select('value')
+      .eq('key', 'system_instruction')
+      .single();
+
+    if (instructionError) {
+      console.error('System instruction error:', instructionError);
+    }
+
+    // Varsayılan sistem talimatı (veritabanından çekilemezse kullanılır)
+    const defaultInstruction = `Sen Friedrich Ataksi (FA) konusunda uzmanlaşmış yardımcı bir asistansın. 
+Aşağıdaki bilgi bankası ve eğitim verilerini kullanarak kullanıcının sorularını yanıtla.
+
+ÖNEMLİ UYARILAR:
+- Sen bir doktor değilsin ve tıbbi tavsiye veremezsin
+- Sadece genel bilgilendirme amaçlı yanıtlar ver
+- Kullanıcıyı her zaman bir sağlık profesyoneline danışmaya yönlendir
+- Eğer sorulan soru bilgi bankasında yoksa, bunu açıkça belirt
+
+Lütfen Türkçe, empatik ve anlaşılır bir dille yanıt ver.`;
+
+    // Veritabanından gelen veya varsayılan talimatı kullan
+    const systemInstruction = systemInstructionData?.value || defaultInstruction;
+
     // Context oluştur
     let context = '';
 
@@ -74,16 +100,20 @@ export async function POST(request: NextRequest) {
       context = 'Henüz bilgi bankasında veri bulunmamaktadır.';
     }
 
+    // Sistem talimatı ve context'i birleştir
+    const fullSystemPrompt = `${systemInstruction}\n\nBİLGİ BANKASI VE EĞİTİM VERİLERİ:${context}`;
+
     console.log('📝 AI yanıtı oluşturuluyor...');
     console.log('Mesaj uzunluğu:', message.length);
     console.log('Context uzunluğu:', context.length);
+    console.log('Sistem talimatı kaynağı:', systemInstructionData ? 'Veritabanı' : 'Varsayılan');
 
     // AI yanıtı oluştur (30 saniye timeout)
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Timeout')), 30000)
     );
 
-    const responsePromise = generateAIResponse(message, context);
+    const responsePromise = generateAIResponse(message, context, fullSystemPrompt);
 
     const aiResponse = await Promise.race([responsePromise, timeoutPromise]);
 

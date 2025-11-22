@@ -9,7 +9,8 @@ const genAI = new GoogleGenerativeAI(apiKey!);
 
 export async function generateAIResponse(
   userMessage: string,
-  context: string
+  context: string,
+  systemInstructions?: string
 ): Promise<string> {
   const startTime = Date.now();
 
@@ -24,7 +25,8 @@ export async function generateAIResponse(
       model: 'gemini-2.5-flash',
     });
 
-    const systemPrompt = `Sen Friedrich Ataksi (FA) konusunda uzmanlaşmış yardımcı bir asistansın. 
+    // Sistem talimatlarını kullan (parametre olarak gelmediyse varsayılan)
+    const systemPrompt = systemInstructions || `Sen Friedrich Ataksi (FA) konusunda uzmanlaşmış yardımcı bir asistansın. 
 Aşağıdaki bilgi bankası ve eğitim verilerini kullanarak kullanıcının sorularını yanıtla.
 
 ÖNEMLİ UYARILAR:

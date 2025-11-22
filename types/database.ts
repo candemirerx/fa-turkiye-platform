@@ -140,6 +140,58 @@ export interface Database {
           updated_at?: string;
         };
       };
+      ai_system_instructions: {
+        Row: {
+          id: string;
+          instruction_key: string;
+          instruction_title: string;
+          instruction_content: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          instruction_key: string;
+          instruction_title: string;
+          instruction_content: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          instruction_key?: string;
+          instruction_title?: string;
+          instruction_content?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      ai_settings: {
+        Row: {
+          key: string;
+          value: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          value: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          value?: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -161,3 +213,5 @@ export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type KnowledgeBase = Database['public']['Tables']['knowledge_base']['Row'];
 export type Event = Database['public']['Tables']['events']['Row'];
 export type AITrainingData = Database['public']['Tables']['ai_training_data']['Row'];
+export type AISystemInstruction = Database['public']['Tables']['ai_system_instructions']['Row'];
+export type AISetting = Database['public']['Tables']['ai_settings']['Row'];

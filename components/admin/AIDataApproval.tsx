@@ -10,9 +10,11 @@ import { createClient } from '@/lib/supabase/client';
 
 interface AIDataApprovalProps {
   data: AITrainingData[];
+  onApproved?: (id: string) => void;
+  onRejected?: (id: string) => void;
 }
 
-export default function AIDataApproval({ data }: AIDataApprovalProps) {
+export default function AIDataApproval({ data, onApproved, onRejected }: AIDataApprovalProps) {
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState<string | null>(null);
@@ -27,6 +29,7 @@ export default function AIDataApproval({ data }: AIDataApprovalProps) {
 
       if (error) throw error;
 
+      onApproved?.(id);
       router.refresh();
     } catch (error) {
       console.error('Approve error:', error);
@@ -50,6 +53,7 @@ export default function AIDataApproval({ data }: AIDataApprovalProps) {
 
       if (error) throw error;
 
+      onRejected?.(id);
       router.refresh();
     } catch (error) {
       console.error('Delete error:', error);
@@ -80,14 +84,14 @@ export default function AIDataApproval({ data }: AIDataApprovalProps) {
       {data.map((item) => (
         <Card key={item.id}>
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <CardTitle className="flex-1">Soru & Cevap</CardTitle>
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <CardTitle className="flex-1">Soru &amp; Cevap</CardTitle>
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   onClick={() => handleApprove(item.id)}
                   disabled={loading === item.id}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 flex-1 sm:flex-none"
                 >
                   {loading === item.id ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -103,7 +107,7 @@ export default function AIDataApproval({ data }: AIDataApprovalProps) {
                   disabled={loading === item.id}
                   size="sm"
                   variant="outline"
-                  className="text-red-600 border-red-600 hover:bg-red-50"
+                  className="text-red-600 border-red-600 hover:bg-red-50 flex-1 sm:flex-none"
                 >
                   {loading === item.id ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
