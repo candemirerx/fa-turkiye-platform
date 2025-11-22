@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import { Check, X, User, MapPin, Loader2, Edit, Trash2, Plus } from 'lucide-react';
+import { Check, X, User, MapPin, Loader2, Edit, Trash2, Plus, ArrowUp, ArrowDown } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 
@@ -42,11 +42,24 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
         onay_durumu: 'beklemede',
     });
 
-    // Filtreleme
-    const filteredProfiles = profiles.filter((profile) => {
-        if (activeTab === 'all') return true;
-        return profile.onay_durumu === activeTab;
-    });
+    // Filtreleme ve sıralama
+    const filteredProfiles = profiles
+        .filter((profile) => {
+            if (activeTab === 'all') return true;
+            return profile.onay_durumu === activeTab;
+        })
+        .sort((a, b) => {
+            // Onaylanan profiller için display_order'a göre sırala
+            if (activeTab === 'onaylandı' || activeTab === 'all') {
+                const orderA = a.display_order ?? 999999;
+                const orderB = b.display_order ?? 999999;
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+            }
+            // Aynı display_order veya diğer durumlar için created_at'e göre sırala
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        });
 
     const tabs = [
         { id: 'beklemede' as TabType, label: 'Bekleyenler', count: profiles.filter(p => p.onay_durumu === 'beklemede').length },
@@ -198,6 +211,82 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
         }
     };
 
+    const handleMoveUp = async (profileId: string, currentOrder: number | null) => {
+        setLoading(profileId);
+        try {
+            // Mevcut profilin üstündeki profili bul
+            const currentIndex = filteredProfiles.findIndex(p => p.id === profileId);
+            if (currentIndex <= 0) {
+                setLoading(null);
+                return; // Zaten en üstte
+            }
+
+            const currentProfile = filteredProfiles[currentIndex];
+            const aboveProfile = filteredProfiles[currentIndex - 1];
+
+            // Display order değerlerini swap et
+            const tempOrder = currentProfile.display_order ?? currentIndex + 1;
+            const aboveOrder = aboveProfile.display_order ?? currentIndex;
+
+            // Her iki profili de güncelle
+            const { error: error1 } = await supabase
+                .from('profiles')
+                .update({ display_order: aboveOrder })
+                .eq('id', currentProfile.id);
+
+            const { error: error2 } = await supabase
+                .from('profiles')
+                .update({ display_order: tempOrder })
+                .eq('id', aboveProfile.id);
+
+            if (error1 || error2) throw error1 || error2;
+            router.refresh();
+        } catch (error) {
+            console.error('Move up error:', error);
+            alert('Sıralama değiştirme sırasında hata oluştu');
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const handleMoveDown = async (profileId: string, currentOrder: number | null) => {
+        setLoading(profileId);
+        try {
+            // Mevcut profilin altındaki profili bul
+            const currentIndex = filteredProfiles.findIndex(p => p.id === profileId);
+            if (currentIndex >= filteredProfiles.length - 1) {
+                setLoading(null);
+                return; // Zaten en altta
+            }
+
+            const currentProfile = filteredProfiles[currentIndex];
+            const belowProfile = filteredProfiles[currentIndex + 1];
+
+            // Display order değerlerini swap et
+            const tempOrder = currentProfile.display_order ?? currentIndex + 1;
+            const belowOrder = belowProfile.display_order ?? currentIndex + 2;
+
+            // Her iki profili de güncelle
+            const { error: error1 } = await supabase
+                .from('profiles')
+                .update({ display_order: belowOrder })
+                .eq('id', currentProfile.id);
+
+            const { error: error2 } = await supabase
+                .from('profiles')
+                .update({ display_order: tempOrder })
+                .eq('id', belowProfile.id);
+
+            if (error1 || error2) throw error1 || error2;
+            router.refresh();
+        } catch (error) {
+            console.error('Move down error:', error);
+            alert('Sıralama değiştirme sırasında hata oluştu');
+        } finally {
+            setLoading(null);
+        }
+    };
+
     return (
         <div>
             {/* Header with Create Button */}
@@ -300,6 +389,31 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
 
                                     {/* Actions */}
                                     <div className="flex gap-2">
+                                        {/* Sıralama Butonları - Sadece onaylanan profiller için */}
+                                        {profile.onay_durumu === 'onaylandı' && activeTab === 'onaylandı' && (
+                                            <>
+                                                <Button
+                                                    onClick={() => handleMoveUp(profile.id, profile.display_order)}
+                                                    disabled={loading === profile.id || filteredProfiles.findIndex(p => p.id === profile.id) === 0}
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                                                    title="Yukarı Taşı"
+                                                >
+                                                    <ArrowUp className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    onClick={() => handleMoveDown(profile.id, profile.display_order)}
+                                                    disabled={loading === profile.id || filteredProfiles.findIndex(p => p.id === profile.id) === filteredProfiles.length - 1}
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                                                    title="Aşağı Taşı"
+                                                >
+                                                    <ArrowDown className="w-4 h-4" />
+                                                </Button>
+                                            </>
+                                        )}
                                         <Button
                                             onClick={() => handleEdit(profile)}
                                             disabled={loading === profile.id}

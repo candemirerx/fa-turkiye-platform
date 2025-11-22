@@ -23,11 +23,21 @@ export default function NetworkPage() {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('onay_durumu', 'onaylandı')
-      .order('created_at', { ascending: false });
+      .eq('onay_durumu', 'onaylandı');
 
     if (data) {
-      setProfiles(data);
+      // Client-side'da sıralama yap
+      const sortedData = data.sort((a, b) => {
+        // Önce display_order'a göre sırala (null değerler sona)
+        const orderA = a.display_order ?? 999999;
+        const orderB = b.display_order ?? 999999;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        // Aynı display_order için created_at'e göre sırala
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+      setProfiles(sortedData);
     }
     setLoading(false);
   };

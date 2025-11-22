@@ -21,6 +21,7 @@ export interface Database {
           yetkinlikler_cv: string | null;
           avatar_url: string | null;
           onay_durumu: 'beklemede' | 'onaylandı' | 'reddedildi';
+          display_order: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -35,6 +36,7 @@ export interface Database {
           yetkinlikler_cv?: string | null;
           avatar_url?: string | null;
           onay_durumu?: 'beklemede' | 'onaylandı' | 'reddedildi';
+          display_order?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -49,6 +51,7 @@ export interface Database {
           yetkinlikler_cv?: string | null;
           avatar_url?: string | null;
           onay_durumu?: 'beklemede' | 'onaylandı' | 'reddedildi';
+          display_order?: number | null;
           created_at?: string;
           updated_at?: string;
         };
