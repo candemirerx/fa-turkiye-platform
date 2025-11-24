@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 
-const ADMIN_PASSWORD = '220309';
-
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,17 +47,9 @@ export function useAuth() {
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    // Admin kontrolü - eğer şifre 220309 ise admin metadata'sı ekle
-    const isAdmin = password === ADMIN_PASSWORD;
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          is_admin: isAdmin,
-        },
-      },
     });
 
     if (error) throw error;
