@@ -8,14 +8,16 @@ export default function HomePage() {
       {/* Hero Section with Menu Grid */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-12">
-            <Heart className="w-4 h-4" />
-            <span>Yalnız Değilsiniz</span>
-          </div>
+          <Link href="/network">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-12 cursor-pointer hover:bg-blue-200 transition-colors">
+              <Heart className="w-4 h-4" />
+              <span>Yalnız Değilsiniz</span>
+            </div>
+          </Link>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-            {/* Bilgi Bankası */}
-            <Link href="/bilgi-bankasi">
+            {/* Bilgi Bankası - Mobilde 3. sırada */}
+            <Link href="/bilgi-bankasi" className="order-3 md:order-1">
               <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-0 shadow-sm hover:-translate-y-1">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -31,8 +33,8 @@ export default function HomePage() {
               </Card>
             </Link>
 
-            {/* FA Network */}
-            <Link href="/network">
+            {/* FA Network - Mobilde 1. sırada */}
+            <Link href="/network" className="order-1 md:order-2">
               <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-0 shadow-sm hover:-translate-y-1">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -48,8 +50,8 @@ export default function HomePage() {
               </Card>
             </Link>
 
-            {/* Etkinlikler */}
-            <Link href="/etkinlikler">
+            {/* Etkinlikler - Mobilde 4. sırada */}
+            <Link href="/etkinlikler" className="order-4 md:order-3">
               <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-0 shadow-sm hover:-translate-y-1">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -65,18 +67,18 @@ export default function HomePage() {
               </Card>
             </Link>
 
-            {/* İletişim */}
-            <Link href="/iletisim">
+            {/* İletişim (Gruplar) - Mobilde 2. sırada */}
+            <Link href="/iletisim" className="order-2 md:order-4">
               <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-0 shadow-sm hover:-translate-y-1">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                     <MessageCircle className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    İletişim
+                    Gruplar
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Sorularınız için bizimle iletişime geçin.
+                    WhatsApp gruplarımıza katılın ve paylaşın.
                   </p>
                 </CardContent>
               </Card>
