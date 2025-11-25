@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
-import { Upload, Loader2 } from 'lucide-react';
+import { Upload, Loader2, Pencil, Check, X } from 'lucide-react';
 import { Profile } from '@/types';
 
 interface ProfileFormProps {
@@ -30,6 +30,11 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     avatar_url: initialData?.avatar_url || '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Yazım düzeltme state'leri
+  const [correcting, setCorrecting] = useState(false);
+  const [correctedText, setCorrectedText] = useState<string | null>(null);
+  const [originalText, setOriginalText] = useState<string>('');
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,6 +76,44 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     } finally {
       setUploading(false);
     }
+  };
+
+  // Yazım düzeltme fonksiyonu
+  const handleCorrectText = async () => {
+    if (!formData.hikayem_text.trim()) return;
+    
+    setCorrecting(true);
+    setOriginalText(formData.hikayem_text);
+    
+    try {
+      const response = await fetch('/api/correct-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: formData.hikayem_text }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.correctedText) {
+        setCorrectedText(data.correctedText);
+        setFormData({ ...formData, hikayem_text: data.correctedText });
+      }
+    } catch (error) {
+      console.error('Düzeltme hatası:', error);
+    } finally {
+      setCorrecting(false);
+    }
+  };
+
+  const handleAcceptCorrection = () => {
+    setCorrectedText(null);
+    setOriginalText('');
+  };
+
+  const handleRejectCorrection = () => {
+    setFormData({ ...formData, hikayem_text: originalText });
+    setCorrectedText(null);
+    setOriginalText('');
   };
 
   const validate = () => {
@@ -251,15 +294,75 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
       />
 
       {/* Hikayem */}
-      <Textarea
-        label="FA Hikayem"
-        value={formData.hikayem_text}
-        onChange={(e) =>
-          setFormData({ ...formData, hikayem_text: e.target.value })
-        }
-        placeholder="FA ile ilgili hikayenizi paylaşın..."
-        rows={8}
-      />
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            FA Hikayem
+          </label>
+          
+          {/* Yazım Düzeltme Butonları */}
+          <div className="flex items-center gap-2">
+            {correctedText !== null ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleAcceptCorrection}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                  title="Düzeltmeyi Onayla"
+                >
+                  <Check className="w-4 h-4" />
+                  <span className="hidden sm:inline">Onayla</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRejectCorrection}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                  title="Düzeltmeyi İptal Et"
+                >
+                  <X className="w-4 h-4" />
+                  <span className="hidden sm:inline">İptal</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleCorrectText}
+                disabled={correcting || !formData.hikayem_text.trim()}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Yazım-Noktalama Düzeltme"
+              >
+                {correcting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Pencil className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">Yazım-Noktalama Düzeltme</span>
+              </button>
+            )}
+          </div>
+        </div>
+        
+        <Textarea
+          value={formData.hikayem_text}
+          onChange={(e) => {
+            setFormData({ ...formData, hikayem_text: e.target.value });
+            // Kullanıcı manuel değişiklik yaparsa düzeltme modundan çık
+            if (correctedText !== null) {
+              setCorrectedText(null);
+              setOriginalText('');
+            }
+          }}
+          placeholder="FA ile ilgili hikayenizi paylaşın..."
+          rows={8}
+          className={correctedText !== null ? 'border-purple-300 bg-purple-50' : ''}
+        />
+        
+        {correctedText !== null && (
+          <p className="mt-2 text-sm text-purple-600">
+            ✨ Metin düzeltildi. Değişiklikleri onaylayın veya iptal edin.
+          </p>
+        )}
+      </div>
 
       {/* Yetkinlikler */}
       <Textarea

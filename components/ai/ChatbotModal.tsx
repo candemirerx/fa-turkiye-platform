@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, AlertCircle, Sparkles, X, Settings, BookOpen, Brain, Info } from 'lucide-react';
+import { Send, AlertCircle, Sparkles, X, Settings, BookOpen, Brain, Info, History } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import ChatSettings from './ChatSettings';
+import ChatHistory, { saveChatSession, getChatHistory } from './ChatHistory';
 
 interface Message {
   id: string;
@@ -12,24 +13,34 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const WELCOME_MESSAGE: Message = {
+  id: '1',
+  role: 'assistant',
+  content:
+    'Merhaba! Ben FA Türkiye Platformu AI asistanıyım. Friedrich Ataksi hakkında sorularınızı yanıtlamak için buradayım. Size nasıl yardımcı olabilirim?',
+  timestamp: new Date(),
+};
+
 export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content:
-        'Merhaba! Ben FA Türkiye Platformu AI asistanıyım. Friedrich Ataksi hakkında sorularınızı yanıtlamak için buradayım. Size nasıl yardımcı olabilirim?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,6 +50,42 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Sohbeti kaydet (mesaj eklendiğinde)
+  useEffect(() => {
+    if (messages.length > 1) {
+      const sessionId = currentSessionId || Date.now().toString();
+      if (!currentSessionId) {
+        setCurrentSessionId(sessionId);
+      }
+      
+      // İlk kullanıcı mesajından başlık oluştur
+      const firstUserMessage = messages.find((m) => m.role === 'user');
+      const title = firstUserMessage
+        ? firstUserMessage.content.slice(0, 50) + (firstUserMessage.content.length > 50 ? '...' : '')
+        : 'Yeni Sohbet';
+
+      const session: ChatSession = {
+        id: sessionId,
+        title,
+        messages,
+        createdAt: new Date(parseInt(sessionId)),
+        updatedAt: new Date(),
+      };
+      saveChatSession(session);
+    }
+  }, [messages, currentSessionId]);
+
+  const handleSelectSession = (session: ChatSession) => {
+    setMessages(session.messages);
+    setCurrentSessionId(session.id);
+    setShowHistory(false);
+  };
+
+  const handleNewChat = () => {
+    setMessages([{ ...WELCOME_MESSAGE, id: Date.now().toString(), timestamp: new Date() }]);
+    setCurrentSessionId(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,13 +155,25 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
     );
   }
 
+  // Geçmiş ekranı açıksa onu göster
+  if (showHistory) {
+    return (
+      <ChatHistory
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        onSelectSession={handleSelectSession}
+        currentSessionId={currentSessionId || undefined}
+      />
+    );
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:justify-end p-0 sm:p-6 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-lg h-[100dvh] sm:h-[700px] sm:rounded-2xl bg-white shadow-2xl flex flex-col"
+        className="w-full sm:max-w-lg h-[100dvh] sm:h-[min(700px,90vh)] sm:rounded-2xl bg-white shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Modern ve Ferah */}
@@ -135,6 +194,14 @@ export default function ChatbotModal({ isOpen, onClose }: ChatbotModalProps) {
 
           {/* Header Butonları */}
           <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="w-10 h-10 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="Sohbet Geçmişi"
+              title="Sohbet Geçmişi"
+            >
+              <History className="w-5 h-5 text-white" />
+            </button>
             <button
               onClick={() => setShowSettings(true)}
               className="w-10 h-10 flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all focus:outline-none focus:ring-2 focus:ring-white"
