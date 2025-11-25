@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import ArticleCard from '@/components/bilgi-bankasi/ArticleCard';
-import { BookOpen, Search } from 'lucide-react';
+import BilgiBankasiHeader from '@/components/bilgi-bankasi/BilgiBankasiHeader';
+import { BookOpen } from 'lucide-react';
 
 export default async function BilgiBankasiPage() {
   const supabase = await createClient();
@@ -28,18 +29,7 @@ export default async function BilgiBankasiPage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <BookOpen className="w-4 h-4" />
-            <span>Bilgi Bankası</span>
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Friedrich Ataksi Hakkında Bilgiler
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            FA hakkında detaylı bilgiler, tedavi seçenekleri ve araştırmalar
-          </p>
-        </div>
+        <BilgiBankasiHeader />
 
         {/* Content */}
         {!articles || articles.length === 0 ? (
