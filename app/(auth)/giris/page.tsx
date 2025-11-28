@@ -1,15 +1,19 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Mail, UserPlus } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { Mail, UserPlus, AlertCircle } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 
-export default function GirisPage() {
+function GirisContent() {
   const { user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
+  const messageType = searchParams.get('message');
+  
   const [activeTab, setActiveTab] = useState<'google' | 'email'>('email');
   const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState('');
@@ -17,11 +21,21 @@ export default function GirisPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Mesaj tipine göre uyarı mesajı
+  const getInfoMessage = () => {
+    if (messageType === 'profile') {
+      return 'Profil eklemek için giriş yapın';
+    }
+    return null;
+  };
+
+  const infoMessage = getInfoMessage();
+
   useEffect(() => {
     if (user) {
-      router.push('/');
+      router.push(redirectUrl || '/');
     }
-  }, [user, router]);
+  }, [user, router, redirectUrl]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +109,14 @@ export default function GirisPage() {
             Friedrich Ataksi Türkiye Platformu
           </p>
         </div>
+
+        {/* Info Message */}
+        {infoMessage && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+            <p className="text-blue-800 text-sm font-medium">{infoMessage}</p>
+          </div>
+        )}
 
         {/* Tab Buttons */}
         <div className="flex gap-2 mb-6">
@@ -222,5 +244,17 @@ export default function GirisPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function GirisPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Yükleniyor...</div>
+      </div>
+    }>
+      <GirisContent />
+    </Suspense>
   );
 }

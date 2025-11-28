@@ -80,15 +80,13 @@ export default function NetworkPage() {
             </div>
 
             {/* Add Profile Button */}
-            {user && (
-              <Link
-                href="/network/profil-olustur"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 min-h-[44px] whitespace-nowrap"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Profil Ekle</span>
-              </Link>
-            )}
+            <Link
+              href={user ? "/network/profil-olustur" : "/giris?redirect=/network/profil-olustur&message=profile"}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 min-h-[44px] whitespace-nowrap"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Profil Ekle</span>
+            </Link>
           </div>
         </div>
 
@@ -111,9 +109,9 @@ export default function NetworkPage() {
                 ? 'Arama kriterlerinize uygun profil bulunamadı.'
                 : 'İlk profili siz oluşturun!'}
             </p>
-            {user && !searchTerm && (
+            {!searchTerm && (
               <Link
-                href="/network/profil-olustur"
+                href={user ? "/network/profil-olustur" : "/giris?redirect=/network/profil-olustur&message=profile"}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500"
               >
                 <Plus className="w-5 h-5" />
