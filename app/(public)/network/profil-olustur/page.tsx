@@ -3,7 +3,13 @@ import { redirect } from 'next/navigation';
 import ProfileForm from '@/components/network/ProfileForm';
 import { UserPlus } from 'lucide-react';
 
-export default async function ProfilOlusturPage() {
+interface Props {
+  searchParams: Promise<{ new?: string }>;
+}
+
+export default async function ProfilOlusturPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const isNewProfile = params.new === 'true';
   const supabase = await createClient();
 
   // Check if user is logged in
@@ -15,12 +21,18 @@ export default async function ProfilOlusturPage() {
     redirect('/giris');
   }
 
-  // Check if user already has a profile
-  const { data: existingProfile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .single();
+  // Check if user already has a profile (only if not creating new)
+  let existingProfile = null;
+  if (!isNewProfile) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .single();
+    existingProfile = data;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Profile } from '@/types';
 import ProfileCard from '@/components/network/ProfileCard';
-import { Users, Plus, Search } from 'lucide-react';
+import { Users, Plus, Search, Edit } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function NetworkPage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [userProfiles, setUserProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const { user } = useAuth();
@@ -18,6 +19,14 @@ export default function NetworkPage() {
   useEffect(() => {
     fetchProfiles();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserProfiles();
+    } else {
+      setUserProfiles([]);
+    }
+  }, [user]);
 
   const fetchProfiles = async () => {
     const { data, error } = await supabase
@@ -40,6 +49,20 @@ export default function NetworkPage() {
       setProfiles(sortedData);
     }
     setLoading(false);
+  };
+
+  const fetchUserProfiles = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
+
+    if (data) {
+      setUserProfiles(data);
+    }
   };
 
   const filteredProfiles = profiles.filter(
@@ -79,14 +102,33 @@ export default function NetworkPage() {
               />
             </div>
 
-            {/* Add Profile Button */}
-            <Link
-              href={user ? "/network/profil-olustur" : "/giris?redirect=/network/profil-olustur&message=profile"}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 min-h-[44px] whitespace-nowrap"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Profil Ekle</span>
-            </Link>
+            {/* Profile Buttons */}
+            {user && userProfiles.length > 0 ? (
+              <div className="flex gap-2">
+                <Link
+                  href={`/network/profil-duzenle/${userProfiles[0].id}`}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-4 focus:ring-green-500 min-h-[44px] whitespace-nowrap"
+                >
+                  <Edit className="w-5 h-5" />
+                  <span>Profili Güncelle</span>
+                </Link>
+                <Link
+                  href="/network/profil-olustur?new=true"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 min-h-[44px] whitespace-nowrap"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Yeni Profil</span>
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href={user ? "/network/profil-olustur" : "/giris?redirect=/network/profil-olustur&message=profile"}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 min-h-[44px] whitespace-nowrap"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Profil Oluştur</span>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -115,7 +157,7 @@ export default function NetworkPage() {
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500"
               >
                 <Plus className="w-5 h-5" />
-                <span>Profil Oluştur</span>
+                <span>İlk Profili Oluştur</span>
               </Link>
             )}
           </div>
