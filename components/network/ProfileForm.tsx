@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
-import { Upload, Loader2, Pencil, Check, X } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
+import { Upload, Loader2, Pencil, Check, X, AlertTriangle } from 'lucide-react';
 import { Profile } from '@/types';
 
 interface ProfileFormProps {
@@ -35,6 +36,72 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
   const [correcting, setCorrecting] = useState(false);
   const [correctedText, setCorrectedText] = useState<string | null>(null);
   const [originalText, setOriginalText] = useState<string>('');
+
+  // Kaydedilmemiş değişiklik kontrolü
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [isSaved, setIsSaved] = useState(true);
+
+  // İlk veriyi memoize et
+  const initialFormData = useMemo(() => ({
+    ad_soyad: initialData?.ad_soyad || '',
+    yas: initialData?.yas || '',
+    yakinlik_derecesi: initialData?.yakinlik_derecesi || '',
+    sehir: initialData?.sehir || '',
+    hikayem_text: initialData?.hikayem_text || '',
+    yetkinlikler_cv: initialData?.yetkinlikler_cv || '',
+    avatar_url: initialData?.avatar_url || '',
+  }), [initialData]);
+
+  // Form değişikliği kontrolü
+  const hasChanges = useCallback(() => {
+    return JSON.stringify(formData) !== JSON.stringify(initialFormData);
+  }, [formData, initialFormData]);
+
+  // Form değiştiğinde isSaved'i güncelle
+  useEffect(() => {
+    setIsSaved(!hasChanges());
+  }, [formData, hasChanges]);
+
+  // Sayfa kapatma/yenileme uyarısı
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isSaved) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isSaved]);
+
+  // Geri gitme işlemi
+  const handleBack = () => {
+    if (!isSaved) {
+      setPendingNavigation(() => () => router.back());
+      setShowUnsavedModal(true);
+    } else {
+      router.back();
+    }
+  };
+
+  // Modal'dan kaydetmeden çık
+  const handleDiscardChanges = () => {
+    setShowUnsavedModal(false);
+    if (pendingNavigation) {
+      pendingNavigation();
+    }
+  };
+
+  // Modal'dan kaydet ve çık
+  const handleSaveAndExit = async () => {
+    setShowUnsavedModal(false);
+    const form = document.querySelector('form');
+    if (form) {
+      form.requestSubmit();
+    }
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -169,8 +236,9 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         if (error) throw error;
       }
 
-      // Başarı mesajını göster
+      // Başarı mesajını göster ve kaydedildi olarak işaretle
       setSuccess(true);
+      setIsSaved(true);
 
       // 5 saniye sonra mesajı gizle
       setTimeout(() => {
@@ -406,12 +474,54 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.back()}
+          onClick={handleBack}
           disabled={loading}
         >
           İptal
         </Button>
       </div>
+
+      {/* Kaydedilmemiş Değişiklik Modalı */}
+      <Modal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        title="Kaydedilmemiş Değişiklikler"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-yellow-100 rounded-full">
+              <AlertTriangle className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <p className="text-gray-700">
+                Kaydedilmemiş değişiklikleriniz var. Çıkmadan önce kaydetmek ister misiniz?
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button
+              onClick={handleSaveAndExit}
+              className="flex-1"
+            >
+              Kaydet
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDiscardChanges}
+              className="flex-1"
+            >
+              Kaydetme
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowUnsavedModal(false)}
+            >
+              İptal
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </form>
   );
 }
