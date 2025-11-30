@@ -41,8 +41,8 @@ export default function ProfileForm({ initialData, userId }: ProfileFormProps) {
     if (!file) return;
 
     // Validate file
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors({ ...errors, avatar: 'Dosya boyutu 5MB\'dan küçük olmalıdır' });
+    if (file.size > 50 * 1024 * 1024) {
+      setErrors({ ...errors, avatar: 'Dosya boyutu 50MB\'dan küçük olmalıdır' });
       return;
     }
 
