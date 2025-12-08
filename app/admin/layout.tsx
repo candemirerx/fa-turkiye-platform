@@ -1,90 +1,230 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import AdminLogin from '@/components/admin/AdminLogin';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Users, BookOpen, Brain, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  Brain,
+  LogOut,
+  Menu,
+  X,
+  ChevronRight,
+  Settings,
+} from 'lucide-react';
 
-async function checkAdminAuth() {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('admin_session');
-  return session?.value === 'authenticated';
-}
+const navItems = [
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/profiller', label: 'Profiller', icon: Users },
+  { href: '/admin/bilgi-bankasi', label: 'Bilgi Bankası', icon: BookOpen },
+  { href: '/admin/ai-egitim', label: 'AI Eğitim', icon: Brain },
+];
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isAuthenticated = await checkAdminAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
-  if (!isAuthenticated) {
-    return <AdminLogin />;
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('/api/admin/auth');
+      setIsAuthenticated(res.ok);
+    } catch {
+      setIsAuthenticated(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      if (res.ok) {
+        setIsAuthenticated(true);
+        router.refresh();
+      } else {
+        setError('Şifre hatalı');
+      }
+    } catch {
+      setError('Bir hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/auth', { method: 'DELETE' });
+    setIsAuthenticated(false);
+  };
+
+  // Loading state
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Admin Header */}
-      <header className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6" />
-              <h1 className="text-lg sm:text-xl font-bold">Admin Paneli</h1>
+  // Login screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                <Settings className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-white mb-2">Admin Paneli</h1>
+              <p className="text-slate-400">Yönetim paneline erişmek için giriş yapın</p>
             </div>
-            <form action="/api/admin/auth" method="DELETE">
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Şifre
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="••••••••"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              {error && (
+                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300 text-sm">
+                  {error}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="flex items-center gap-2 px-3 py-2 sm:px-4 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-gray-700"
+                disabled={loading}
+                className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Çıkış</span>
+                {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
               </button>
             </form>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-slate-900 text-white sticky top-0 z-40">
+        <div className="flex items-center justify-between px-4 h-16">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <Settings className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-lg">Admin</span>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </header>
 
-      {/* Admin Navigation */}
-      <nav className="bg-white border-b border-gray-200 overflow-x-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1 sm:gap-2 py-3 sm:py-4 min-w-max sm:min-w-0">
-            <Link
-              href="/admin"
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 whitespace-nowrap"
-            >
-              <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              href="/admin/profiller"
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 whitespace-nowrap"
-            >
-              <Users className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>Profiller</span>
-            </Link>
-            <Link
-              href="/admin/bilgi-bankasi"
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 whitespace-nowrap"
-            >
-              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Bilgi Bankası</span>
-              <span className="sm:hidden">Bilgi</span>
-            </Link>
-            <Link
-              href="/admin/ai-egitim"
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-4 focus:ring-blue-500 whitespace-nowrap"
-            >
-              <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">AI Eğitim</span>
-              <span className="sm:hidden">AI</span>
-            </Link>
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-72 bg-slate-900 text-white z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-700">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <Settings className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="font-bold text-lg">FA Türkiye</h1>
+            <p className="text-xs text-slate-400">Yönetim Paneli</p>
           </div>
         </div>
-      </nav>
 
-      {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {children}
+        {/* Navigation */}
+        <nav className="p-4 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href || 
+              (item.href !== '/admin' && pathname.startsWith(item.href));
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
+                  isActive
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20'
+                    : 'text-slate-300 hover:bg-white/10'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                <span className="font-medium">{item.label}</span>
+                {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logout Button */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full px-4 py-3 text-slate-300 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Çıkış Yap</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="lg:ml-72 min-h-screen">
+        <div className="p-4 sm:p-6 lg:p-8">
+          {children}
+        </div>
       </main>
     </div>
   );
