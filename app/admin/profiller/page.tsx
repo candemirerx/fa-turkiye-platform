@@ -8,7 +8,8 @@ export default async function AdminProfillerPage() {
   const { data: allProfiles } = await supabase
     .from('profiles')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('display_order', { ascending: true, nullsFirst: false })
+    .order('created_at', { ascending: true });
 
   const pendingCount = allProfiles?.filter(p => p.onay_durumu === 'beklemede').length || 0;
   const approvedCount = allProfiles?.filter(p => p.onay_durumu === 'onaylandı').length || 0;

@@ -57,18 +57,18 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
   const filteredProfiles = profiles
     .filter((profile) => {
       const matchesTab = activeTab === 'all' || profile.onay_durumu === activeTab;
-      const matchesSearch = !searchTerm || 
+      const matchesSearch = !searchTerm ||
         profile.ad_soyad.toLowerCase().includes(searchTerm.toLowerCase()) ||
         profile.sehir.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesTab && matchesSearch;
     })
     .sort((a, b) => {
-      if (activeTab === 'onaylandı' || activeTab === 'all') {
-        const orderA = a.display_order ?? 999999;
-        const orderB = b.display_order ?? 999999;
-        if (orderA !== orderB) return orderA - orderB;
-      }
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      // Always sort by display_order first
+      const orderA = a.display_order ?? 999999;
+      const orderB = b.display_order ?? 999999;
+      if (orderA !== orderB) return orderA - orderB;
+      // Then by created_at
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     });
 
   const handleApprove = async (profileId: string) => {
@@ -213,16 +213,14 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
               >
                 {tab.label}
-                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  activeTab === tab.id ? 'bg-white/20' : 'bg-slate-200'
-                }`}>
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id ? 'bg-white/20' : 'bg-slate-200'
+                  }`}>
                   {tab.count}
                 </span>
               </button>
@@ -290,13 +288,12 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <h3 className="text-lg font-semibold text-slate-900">{profile.ad_soyad}</h3>
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                        profile.onay_durumu === 'onaylandı' ? 'bg-emerald-100 text-emerald-700' :
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${profile.onay_durumu === 'onaylandı' ? 'bg-emerald-100 text-emerald-700' :
                         profile.onay_durumu === 'beklemede' ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
+                          'bg-red-100 text-red-700'
+                        }`}>
                         {profile.onay_durumu === 'onaylandı' ? 'Onaylı' :
-                         profile.onay_durumu === 'beklemede' ? 'Bekliyor' : 'Reddedildi'}
+                          profile.onay_durumu === 'beklemede' ? 'Bekliyor' : 'Reddedildi'}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
@@ -311,26 +308,25 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-                    {profile.onay_durumu === 'onaylandı' && activeTab === 'onaylandı' && (
-                      <>
-                        <button
-                          onClick={() => handleMoveUp(profile.id)}
-                          disabled={loading === profile.id || index === 0}
-                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 transition-colors"
-                          title="Yukarı"
-                        >
-                          <ArrowUp className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleMoveDown(profile.id)}
-                          disabled={loading === profile.id || index === filteredProfiles.length - 1}
-                          className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg disabled:opacity-30 transition-colors"
-                          title="Aşağı"
-                        >
-                          <ArrowDown className="w-4 h-4" />
-                        </button>
-                      </>
-                    )}
+                    {/* Ordering buttons - visible for all profiles */}
+                    <div className="flex items-center gap-1 border-r border-slate-200 pr-2 mr-1">
+                      <button
+                        onClick={() => handleMoveUp(profile.id)}
+                        disabled={loading === profile.id || index === 0}
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        title="Yukarı Taşı"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleMoveDown(profile.id)}
+                        disabled={loading === profile.id || index === filteredProfiles.length - 1}
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        title="Aşağı Taşı"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+                    </div>
                     <button
                       onClick={() => handleEdit(profile)}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -407,7 +403,7 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Input
