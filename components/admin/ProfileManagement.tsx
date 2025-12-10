@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Profile } from '@/types';
-import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import {
@@ -18,7 +17,6 @@ import {
   ArrowUp,
   ArrowDown,
   Search,
-  Filter,
 } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
@@ -32,7 +30,7 @@ type TabType = 'beklemede' | 'onaylandı' | 'reddedildi' | 'all';
 export default function ProfileManagement({ profiles }: ProfileManagementProps) {
   const router = useRouter();
   const supabase = createClient();
-  const [activeTab, setActiveTab] = useState<TabType>('beklemede');
+  const [activeTab, setActiveTab] = useState<TabType>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState<string | null>(null);
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
