@@ -44,12 +44,15 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const session = cookieStore.get('admin_session');
+    const isAuthenticated = session?.value === 'authenticated';
 
-    return NextResponse.json({
-      authenticated: session?.value === 'authenticated',
-    });
+    if (!isAuthenticated) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+
+    return NextResponse.json({ authenticated: true });
   } catch (error) {
-    return NextResponse.json({ authenticated: false });
+    return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }
 
