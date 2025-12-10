@@ -181,8 +181,11 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
     try {
       const current = filteredProfiles[currentIndex];
       const above = filteredProfiles[currentIndex - 1];
-      await supabase.from('profiles').update({ display_order: above.display_order ?? currentIndex }).eq('id', current.id);
-      await supabase.from('profiles').update({ display_order: current.display_order ?? currentIndex + 1 }).eq('id', above.id);
+      // Swap display_order values
+      const currentOrder = current.display_order ?? currentIndex + 1;
+      const aboveOrder = above.display_order ?? currentIndex;
+      await supabase.from('profiles').update({ display_order: aboveOrder }).eq('id', current.id);
+      await supabase.from('profiles').update({ display_order: currentOrder }).eq('id', above.id);
       router.refresh();
     } catch { alert('Sıralama hatası'); }
     finally { setLoading(null); }
@@ -195,8 +198,11 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
     try {
       const current = filteredProfiles[currentIndex];
       const below = filteredProfiles[currentIndex + 1];
-      await supabase.from('profiles').update({ display_order: below.display_order ?? currentIndex + 2 }).eq('id', current.id);
-      await supabase.from('profiles').update({ display_order: current.display_order ?? currentIndex + 1 }).eq('id', below.id);
+      // Swap display_order values
+      const currentOrder = current.display_order ?? currentIndex + 1;
+      const belowOrder = below.display_order ?? currentIndex + 2;
+      await supabase.from('profiles').update({ display_order: belowOrder }).eq('id', current.id);
+      await supabase.from('profiles').update({ display_order: currentOrder }).eq('id', below.id);
       router.refresh();
     } catch { alert('Sıralama hatası'); }
     finally { setLoading(null); }
@@ -284,9 +290,15 @@ export default function ProfileManagement({ profiles }: ProfileManagementProps) 
                     )}
                   </div>
 
+                  {/* Order Number */}
+                  <div className="hidden sm:flex w-10 h-10 bg-slate-100 rounded-lg items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-slate-500">#{index + 1}</span>
+                  </div>
+
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="sm:hidden text-xs font-medium text-slate-400">#{index + 1}</span>
                       <h3 className="text-lg font-semibold text-slate-900">{profile.ad_soyad}</h3>
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${profile.onay_durumu === 'onaylandı' ? 'bg-emerald-100 text-emerald-700' :
                         profile.onay_durumu === 'beklemede' ? 'bg-amber-100 text-amber-700' :
